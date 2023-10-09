@@ -46,7 +46,6 @@ while (1):
 
     if (nr_acertos == NRCASOS):  # convergiu
         break
-
     else:  # atualizando os pesos
         w1 += passo * erro1
         w2 += passo * erro2
