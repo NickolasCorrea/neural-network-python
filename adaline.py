@@ -5,6 +5,15 @@ from math import sqrt
 
 def funcao_ativacao(x1, x2):
     saidaIntermediaria = (x[0]*w[0]) + (x1*w[1]) + (x2*w[2])
+    print("x0: " + str(x[0]))
+    print("w0: " + str(w[0]))
+    print("x0*w0: " + str(x[0]*w[0]))
+    print("x1: " + str(x1))
+    print("w1: " + str(w[1]))
+    print("x1*w1: " + str(x1*w[1]))
+    print("x2: " + str(x2))
+    print("w2: " + str(w[2]))
+    print("x2*w2: " + str(x2*w[2]))
     saida = -1.0
     if (saidaIntermediaria >= 0.0):
         saida = 1.0
@@ -16,10 +25,15 @@ def funcao_ativacao(x1, x2):
 # target = [-1, -1, -1, -1, 1, 1, 1, 1]  #target
 # x1 = [2]
 # x2 = [31]
+
 NRCASOS = 8
+taxaAprendizado = 0.0001  # constante de aprendizado (0 < taxaAprendizado < 2)
 x = [1, [25, 22, 30, 27, 4, 6, 10, 3], [34, 37, 33, 37, 40, 38, 44, 42]]
 w = [0, 0.02, 0.01]
 target = [-1, -1, -1, -1, 1, 1, 1, 1]  #target
+
+# NRCASOS = 1
+# taxaAprendizado = 0.01  # constante de aprendizado (0 < taxaAprendizado < 2)
 # x = [1, [2], [31]]
 # w = [0, 4, -12]
 # target = [1]  #target
@@ -29,12 +43,11 @@ target = [-1, -1, -1, -1, 1, 1, 1, 1]  #target
 # w1 = 4
 # w2 = -12
 
-taxaAprendizado = 0.0001  # constante de aprendizado (0 < taxaAprendizado < 2)
 nrAcertos = 0  # acertos por treinamento
 nrTreinamentos = 0
 erro = 0
 
-while (1):
+while (nrAcertos != NRCASOS and nrTreinamentos < 1):
     nrTreinamentos += 1
     nrAcertos = 0
 
@@ -59,6 +72,9 @@ while (1):
             w[0] += taxaAprendizado * erro * x[0] / xQuadrado
             w[1] += taxaAprendizado * erro * x[1][contador] / xQuadrado
             w[2] += taxaAprendizado * erro * x[2][contador] / xQuadrado
+            print("w0: " + str(w[0]))
+            print("w1: " + str(w[1]))
+            print("w2: " + str(w[2]))
             print("Erro: " + str(erro))
             print("Saida Intermediária: " + str(saidaIntermediaria) + "\n")
 
