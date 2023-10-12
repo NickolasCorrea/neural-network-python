@@ -6,16 +6,9 @@ from math import sqrt
 def funcao_ativacao(x1, x2):
     saidaIntermediaria = (x[0]*w[0]) + (x1*w[1]) + (x2*w[2])
     saida = -1.0
-    if (saidaIntermediaria >= 0.0):
-        saida = 1.0
+    if (saidaIntermediaria > 0.0):
+        saida = 1.0   
     return saidaIntermediaria, saida
-
-
-# x1 = [25, 22, 30, 27, 4, 6, 10, 3]
-# x2 = [34, 37, 33, 37, 40, 38, 44, 42]
-# target = [-1, -1, -1, -1, 1, 1, 1, 1]  #target
-# x1 = [2]
-# x2 = [31]
 
 '''NRCASOS = 16  # mistureba do Nichollas
 taxaAprendizado = 0.01  # constante de aprendizado (0 < taxaAprendizado < 2)
@@ -34,11 +27,6 @@ taxaAprendizado = 0.01  # constante de aprendizado (0 < taxaAprendizado < 2)
 x = [1, [2], [31]]
 w = [0, 4, -12]
 target = [1]  #target'''
-
-# x0 = 1
-# w0 = 0
-# w1 = 4
-# w2 = -12
 
 nrAcertos = 0  # acertos por treinamento
 nrTreinamentos = 0
@@ -61,10 +49,7 @@ while (nrAcertos != NRCASOS):
             break
         else:
             erro = target[contador] - saidaIntermediaria
-            # xQuadrado = (x[0]**2 + x[1][contador]**2 + x[2][contador]**2)
-            xQuadrado = x[0]**2
-            for num in range(1, len(x)):
-                xQuadrado += x[num][contador]**2
+            xQuadrado = (x[0]**2 + x[1][contador]**2 + x[2][contador]**2)
 
             w[0] += taxaAprendizado * erro * x[0] / xQuadrado
             w[1] += taxaAprendizado * erro * x[1][contador] / xQuadrado
