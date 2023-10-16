@@ -1,7 +1,10 @@
 import tkinter
 from tkinter import ttk, StringVar, END, messagebox, DISABLED
-
-
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import (
+     FigureCanvasTkAgg)
+import numpy as np
+ 
 casos = []
 
 def criaTabela():
@@ -42,9 +45,12 @@ def criaTabela():
         x1_entrada.delete(0, END)
         x2_entrada.delete(0, END)
 
+#-------------------------------------------------------------------------
+
 # Criando janela da aplicação
 window = tkinter.Tk()
 window.title("Rede Neural Adaline")
+# window.state('zoomed') --> Começa a aplicação em tela cheia.
 
 # Criando frame que comportará os grids
 frame = ttk.Frame(window)
@@ -143,7 +149,6 @@ x2_entrada.grid(row = 0, column = 4)
 # Criando label para target
 target_label = ttk.Label(casos_frame, text = "Target:")
 target_label.grid(row = 1, column = 0)
-
 target_valor = StringVar(value = "+1")
 
 # Criando radio button para target +1
@@ -165,19 +170,29 @@ for widget in casos_frame.winfo_children():
 x2_label.grid(padx = (15, 5))
 button.grid(padx = (15, 5))
 
+#-------------------------------------------------------------------------
 
-# Criando uma comboBox
-#title = ttk.Label(pesos_frame, text = "Title")
-#title_combobox = ttk.Combobox(pesos_frame, values=["alsos", "sda"])
-#title.grid(row = 0, column = 2)
-#title_combobox.grid(row = 1, column = 2)
+# Cria o grafico_frame como um LabelFrame
+grafico_frame = ttk.LabelFrame(frame, text="Gráfico")
+grafico_frame.grid(row=1, column=2, padx=20, pady=20)
 
-# Criando uma spinBox
-#age_label = ttk.Label(pesos_frame, text = "Age")
-#age_spinbox = ttk.Spinbox(pesos_frame, from_ = 18, to = 100) # Cria uma delimentação para valores numericos na entrada
-#age_label.grid(row = 0, column = 2)
-#age_spinbox.grid(row = 1, column = 2)
+# Cria a figura e os seus eixos
+fig, ax = plt.subplots()
 
+# Adiciona a figura ao grafico_frame
+canvas = FigureCanvasTkAgg(fig, master=grafico_frame)
+canvas.get_tk_widget().grid(row=0, column=0)
+canvas.draw()
+
+# Plot data on Matplotlib Figure
+# t = np.arange(0, 2*np.pi, .01)
+# ax.plot(t, np.sin(t))
+
+# Configura a expansão dos widgets
+frame.columnconfigure(0, weight=1)
+frame.rowconfigure(0, weight=1)
+grafico_frame.columnconfigure(0, weight=1)
+grafico_frame.rowconfigure(0, weight=1)
 
 
 # Loop para a GUI rodar até que seja fechada
