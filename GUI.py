@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (
      FigureCanvasTkAgg)
 import numpy as np
+#import adaline
  
 casos = []
 
@@ -14,9 +15,9 @@ def criaTabela():
     if (x1_entrada_valor == "" and x2_entrada_valor == ""):
         messagebox.showerror(title = "Entradas vazias", message = "Primeiramente, insira os valores das entradas!")
     elif (x1_entrada_valor == ""):
-        messagebox.showerror(title = "X1 vazio", message = "Insira o valor de X1!")
+        messagebox.showerror(title = "X1 vazio", message = "Insira o valor de X1 !")
     elif (x2_entrada_valor == ""):
-        messagebox.showerror(title = "X2 vazio", message = "Insira o valor de X2!")
+        messagebox.showerror(title = "X2 vazio", message = "Insira o valor de X2 !")
     else:
         # Criando Grid para a tabela de casos
         tabela_frame = ttk.LabelFrame(frame, text = "Tabela de casos")
@@ -45,6 +46,50 @@ def criaTabela():
         x1_entrada.delete(0, END)
         x2_entrada.delete(0, END)
 
+
+    
+def verificaPreenchimentoEntradas():
+    w1_entrada_valor = w1_entrada.get()
+    w2_entrada_valor = w2_entrada.get()
+
+    x0_entrada_valor = x0_entrada.get()
+    w0_entrada_valor = w0_entrada.get()
+
+    taxaAprendizagem_entrada_valor = taxaAprendizagem_entrada.get()
+    numMaxTreinos_entrada_valor = numMaxTreinos_entrada.get()
+
+    # Verifica o preenchimento dos pesos W1 e W2
+    if (w1_entrada_valor == "" and w2_entrada_valor == ""):
+       messagebox.showerror(title = "Pesos vazios", message = "Primeiramente, insira os valores dos pesos iniciais! (W1 e W2)")
+    elif (w1_entrada_valor == ""):
+        messagebox.showerror(title = "W1 vazio", message = "Insira o valor de W1 !")
+    elif (w2_entrada_valor == ""):
+        messagebox.showerror(title = "W2 vazio", message = "Insira o valor de W2 !")
+
+    # Verifica o preenchimento do bias X0 e W0
+    if (x0_entrada_valor == "" and w0_entrada_valor == ""):
+       messagebox.showerror(title = "Bias vazio", message = "Primeiramente, preencha os valores do Bias! (X0 e W0)")
+    elif (x0_entrada_valor == ""):
+        messagebox.showerror(title = "XO vazio", message = "Insira o valor de X0 !")
+    elif (w0_entrada_valor == ""):
+        messagebox.showerror(title = "W0 vazio", message = "Insira o valor de W0 !")
+
+    # Verifica o preenchimento da taxa de aprendizagem e numero máximo de treinos
+    if (taxaAprendizagem_entrada_valor == ""):
+        messagebox.showerror(title = "Taxa de aprendizagem vazio", message = "Insira o valor da taxa de aprendizagem !")
+    
+    # Verifica o preenchimento do numero máximo de treinos
+    if (numMaxTreinos_entrada_valor == ""):
+        numMaxTreinos_entrada_valor = 100000
+
+    # Envia os dados das entradas para a função de treino
+    #adaline.treinarAdaline()
+
+    # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.
+    #t = np.arange(0, 2*np.pi, .01)
+    #ax.plot(t, np.sin(t))
+    #canvas.draw()
+
 #-------------------------------------------------------------------------
 
 # Criando janela da aplicação
@@ -60,19 +105,19 @@ frame.pack()
 pesos_frame = ttk.LabelFrame(frame, text = "Insira os pesos iniciais")
 pesos_frame.grid(row = 0, column = 0, padx = 20, pady = 20, sticky = "w")
 
-# Criando label para o peso1
-peso1_label = ttk.Label(pesos_frame, text= "W1:")
-peso1_label.grid(row = 0, column = 0)
-# Criando entrada para o peso1
-peso1_entrada = ttk.Entry(pesos_frame)
-peso1_entrada.grid(row = 0, column = 1)
+# Criando label para o W1
+w1_label = ttk.Label(pesos_frame, text= "W1:")
+w1_label.grid(row = 0, column = 0)
+# Criando entrada para o W1
+w1_entrada = ttk.Entry(pesos_frame)
+w1_entrada.grid(row = 0, column = 1)
 
-# Criando label para o peso2
-peso2_label = ttk.Label(pesos_frame, text= "W2:")
-peso2_label.grid(row = 1, column = 0)
-# Criando entrada para o peso2
-peso2_entrada = ttk.Entry(pesos_frame)
-peso2_entrada.grid(row = 1, column = 1)
+# Criando label para o W2
+w2_label = ttk.Label(pesos_frame, text= "W2:")
+w2_label.grid(row = 1, column = 0)
+# Criando entrada para o W2
+w2_entrada = ttk.Entry(pesos_frame)
+w2_entrada.grid(row = 1, column = 1)
 
 # Criando um padding para todos os conteudos dentro do frame pesos_frame
 for widget in pesos_frame.winfo_children():
@@ -91,12 +136,12 @@ x0_label.grid(row = 0, column = 0)
 x0_entrada = ttk.Entry(bias_frame)
 x0_entrada.grid(row = 0, column = 1)
 
-# Criando label para o peso0
-peso0_label = ttk.Label(bias_frame, text= "W0:")
-peso0_label.grid(row = 1, column = 0)
-# Criando entrada para o peso0
-peso0_entrada = ttk.Entry(bias_frame)
-peso0_entrada.grid(row = 1, column = 1)
+# Criando label para o w0
+w0_label = ttk.Label(bias_frame, text= "W0:")
+w0_label.grid(row = 1, column = 0)
+# Criando entrada para o w0
+w0_entrada = ttk.Entry(bias_frame)
+w0_entrada.grid(row = 1, column = 1)
 
 # Criando um padding para todos os conteudos dentro do frame bias_frame
 for widget in bias_frame.winfo_children():
@@ -177,8 +222,9 @@ grafico_frame = ttk.LabelFrame(frame, text="Gráfico")
 grafico_frame.grid(row=1, column=2, padx=20, pady=20)
 
 # Cria o botão "Treinar um Neurônio" como um LabelFrame
-trainNeuronButton = ttk.Button(grafico_frame, text = "Treinar Neurônio")
-trainNeuronButton.grid(row = 0, column = 0,padx=(0, 500))
+trainNeuronButton = ttk.Button(grafico_frame, padding=(5, 5), text = "Treinar Neurônio", 
+                               command = verificaPreenchimentoEntradas)
+trainNeuronButton.grid(row = 0, column = 0, padx=(0, 500))
 
 # Cria a figura e os seus eixos
 fig, ax = plt.subplots()
