@@ -159,8 +159,8 @@ targetMais_button.grid(row = 1, column = 1)
 targetMenos_button = ttk.Radiobutton(casos_frame, text = "-1", value = "-1", variable = target_valor)
 targetMenos_button.grid(row = 1, column = 2)
 
-button = ttk.Button(casos_frame, text = "Salvar", command = criaTabela)
-button.grid(row = 0, column = 5)
+saveButton = ttk.Button(casos_frame, text = "Salvar", command = criaTabela)
+saveButton.grid(row = 0, column = 5)
 
 # Criando um padding para todos os conteudos dentro do frame casos_frame
 for widget in casos_frame.winfo_children():
@@ -168,7 +168,7 @@ for widget in casos_frame.winfo_children():
 
 # Ajusta padding left da label de X2 e do botão salvar
 x2_label.grid(padx = (15, 5))
-button.grid(padx = (15, 5))
+saveButton.grid(padx = (15, 5))
 
 #-------------------------------------------------------------------------
 
@@ -176,12 +176,16 @@ button.grid(padx = (15, 5))
 grafico_frame = ttk.LabelFrame(frame, text="Gráfico")
 grafico_frame.grid(row=1, column=2, padx=20, pady=20)
 
+# Cria o botão "Treinar um Neurônio" como um LabelFrame
+trainNeuronButton = ttk.Button(grafico_frame, text = "Treinar Neurônio")
+trainNeuronButton.grid(row = 0, column = 0,padx=(0, 500))
+
 # Cria a figura e os seus eixos
 fig, ax = plt.subplots()
 
 # Adiciona a figura ao grafico_frame
 canvas = FigureCanvasTkAgg(fig, master=grafico_frame)
-canvas.get_tk_widget().grid(row=0, column=0)
+canvas.get_tk_widget().grid(row = 1, column = 0)
 canvas.draw()
 
 # Plot data on Matplotlib Figure
