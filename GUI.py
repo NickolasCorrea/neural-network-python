@@ -89,11 +89,16 @@ def verificaPreenchimentoEntradas():
             x1.append(int(caso[1]))
             x2.append(int(caso[2]))
             target.append(int(caso[3]))
-        
-        xTotal = [x0_entrada_valor, x1, x2]
-        wTotal = [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor]
+
+        xLista = [x0_entrada_valor, x1, x2]
+        wLista = [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor]
+
+        x0_entrada_valor = int(x0_entrada_valor) # Converte a lista para float
+        wLista = list(map(float, wLista)) # Converte a lista para float
+        taxaAprendizagem_entrada_valor = float(taxaAprendizagem_entrada_valor) # Converte a taxaAprendizado para float
+
         if(modeloRede_radio_valor == "Adaline"):
-            adaline.treinarAdaline(taxaAprendizagem_entrada_valor, xTotal, wTotal,
+            adaline.treinarAdaline(taxaAprendizagem_entrada_valor, xLista, wLista,
                                     target, numMaxTreinos_entrada_valor)
 
             # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.

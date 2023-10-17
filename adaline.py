@@ -1,6 +1,6 @@
 #NICKOLAS DE SOUZA SILVEIRA CORRÊA - RA: 185823
 #VICTOR RICO MOURA SANTOS - RA: 191068
-
+import pdb
 from math import sqrt
 
 
@@ -17,10 +17,11 @@ def treinarAdaline(taxaAprendizado, x, w, target, nrMaxTreinos):
     erro = 0
     NRCASOS = len(target)
     #print("taxaAprendizado: " + taxaAprendizado)       #DEBUGZÃO 
-    #print("X: " + x)
-    #print("W: " + w)
-    #print("target: " + target)
-    #print("nrMaxTreinos: " + nrMaxTreinos)
+    #print("X: " + str(x))
+    #print("W: " + str(w))
+    #print("target: " + str(target))
+    #print("nrMaxTreinos: " + str(nrMaxTreinos))
+    #pdb.set_trace()
 
     while (nrAcertos != NRCASOS and nrTreinamentos != nrMaxTreinos):
         nrTreinamentos += 1
@@ -62,7 +63,8 @@ target = [-1, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1]  #target'''
 x = [1, [25, 22, 30, 27, 4, 6, 10, 3], [34, 37, 33, 37, 40, 38, 44, 42]]
 w = [0, 0.02, 0.01]
 target = [-1, -1, -1, -1, 1, 1, 1, 1]  #target
-nrMaxTreinos = 5000'''
+nrMaxTreinos = 5000
+w = list(map(float, w))'''
 
 #teste = treinarAdaline(taxaAprendizado, x, w, target, nrMaxTreinos)
 
