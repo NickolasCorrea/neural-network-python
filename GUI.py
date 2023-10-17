@@ -54,6 +54,8 @@ def verificaPreenchimentoEntradas():
     taxaAprendizagem_entrada_valor = taxaAprendizagem_entrada.get()
     numMaxTreinos_entrada_valor = numMaxTreinos_entrada.get()
 
+    modeloRede_radio_valor = modeloRede_radio.get()
+
     # Verifica o preenchimento dos pesos W1 e W2
     if (w1_entrada_valor == "" and w2_entrada_valor == ""):
        messagebox.showerror(title = "Pesos vazios", message = "Primeiramente, insira os valores dos pesos iniciais! (W1 e W2)")
@@ -87,12 +89,21 @@ def verificaPreenchimentoEntradas():
             x1.append(int(caso[1]))
             x2.append(int(caso[2]))
             target.append(int(caso[3]))
-        adaline.treinarAdaline(taxaAprendizagem_entrada_valor, [x0_entrada_valor, x1, x2], [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor], target)
+        
+        xTotal = [x0_entrada_valor, x1, x2]
+        wTotal = [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor]
+        if(modeloRede_radio_valor == "Adaline"):
+            adaline.treinarAdaline(taxaAprendizagem_entrada_valor, xTotal, wTotal,
+                                    target, numMaxTreinos_entrada_valor)
 
-        # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.
-        #t = np.arange(0, 2*np.pi, .01)
-        #ax.plot(t, np.sin(t))
-        #canvas.draw()
+            # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.
+            #t = np.arange(0, 2*np.pi, .01)
+            #ax.plot(t, np.sin(t))
+            #canvas.draw()
+        #else:
+            #perceptron.treinarPerceptron(taxaAprendizagem_entrada_valor, [x0_entrada_valor, x1, x2], [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor], 
+            # target, numMaxTreinos_entrada_valor)
+
 
 #-------------------------------------------------------------------------
 
@@ -177,6 +188,23 @@ for widget in treinoNeuronio_frame.winfo_children():
 
 #-------------------------------------------------------------------------
 
+# Criando Grid para o MODELOS DE REDES NEURAIS
+modeloRede_frame = ttk.LabelFrame(frame, text = "Treino de Neurônios")
+modeloRede_frame.grid(row = 0, column = 3, padx = (90, 20), pady = 20, sticky = "w")
+
+# Seta o modeloRede_radio para começar com ADALINE por padrão
+modeloRede_radio = StringVar(value = "Adaline")
+
+# Criando radio button para target +1
+perceptron_radioButton = ttk.Radiobutton(modeloRede_frame, text = "Perceptron", value = "Perceptron", variable = modeloRede_radio)
+perceptron_radioButton.grid(row = 1, column = 1)
+
+# Criando radio button para target -1
+adaline_radioButton = ttk.Radiobutton(modeloRede_frame, text = "Adaline", value = "Adaline", variable = modeloRede_radio)
+adaline_radioButton.grid(row = 1, column = 2)
+
+#-------------------------------------------------------------------------
+
 # Criando Grid para os CASOS
 casos_frame = ttk.LabelFrame(frame, text = "Casos")
 casos_frame.grid(row = 1, column =  0, columnspan = 2, padx = 20, pady = 20)
@@ -235,7 +263,7 @@ tabela.bind("<Delete>", deletaCasos)
 
 # Cria o grafico_frame como um LabelFrame
 grafico_frame = ttk.LabelFrame(frame, text="Gráfico")
-grafico_frame.grid(row=1, rowspan = 7, column=2, padx=20, pady=20)
+grafico_frame.grid(row=1, rowspan = 7, columnspan = 2, column=2, padx=20, pady=20)
 
 # Cria o botão "Treinar um Neurônio" como um LabelFrame
 trainNeuronButton = ttk.Button(grafico_frame, padding=(5, 5), text = "Treinar Neurônio", 
