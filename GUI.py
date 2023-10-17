@@ -1,14 +1,17 @@
 import tkinter
-from tkinter import ttk, StringVar, END, messagebox, DISABLED
+from tkinter import ttk, StringVar, END, messagebox
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (
      FigureCanvasTkAgg)
 import numpy as np
-#import adaline
+import adaline
  
 casos = []
+idCaso = 1
 
-def criaTabela():
+def adicionaCaso():
+    global idCaso
+
     x1_entrada_valor = x1_entrada.get()
     x2_entrada_valor = x2_entrada.get()
 
@@ -18,35 +21,28 @@ def criaTabela():
         messagebox.showerror(title = "X1 vazio", message = "Insira o valor de X1 !")
     elif (x2_entrada_valor == ""):
         messagebox.showerror(title = "X2 vazio", message = "Insira o valor de X2 !")
+    elif (not x1_entrada_valor.isnumeric() or not x2_entrada_valor.isnumeric()):
+        messagebox.showerror(title = "X2 vazio", message = "Insira apenas valores numericos !")
     else:
-        # Criando Grid para a tabela de casos
-        tabela_frame = ttk.LabelFrame(frame, text = "Tabela de casos")
-        tabela_frame.grid(row = 3, column =  0, columnspan = 2, padx = 20, pady = 20)
+        target_radio_valor = target_radio.get()
 
-        # Adiciona primeira linha
-        header = ["X1", "X2", "Target"]
-        for contador in range(3):
-            tabela_entrada = ttk.Entry(tabela_frame)
-            tabela_entrada.grid(row = 0, column = contador)
-            tabela_entrada.insert(END, header[contador])
-            tabela_entrada.config(state = DISABLED)
-        
         # Adiciona novo caso à lista
-        casos.append([x1_entrada_valor, x2_entrada_valor, target_valor.get()])
+        casos.append([idCaso, x1_entrada_valor, x2_entrada_valor, target_radio_valor])
+        idCaso += 1
 
-        # Monta tabela
-        for linha in range(len(casos)):
-            for coluna in range(len(casos[0])):
-                tabela_entrada = ttk.Entry(tabela_frame)
-                tabela_entrada.grid(row = linha + 1, column = coluna)
-                tabela_entrada.insert(END, casos[linha][coluna])
-                tabela_entrada.config(state = DISABLED)
+        # Insere novo caso na tabela
+        tabela.insert(parent = "", index = END, values = (x1_entrada_valor, x2_entrada_valor, target_radio_valor))
 
-        # Limpa entradas
         x1_entrada.delete(0, END)
         x2_entrada.delete(0, END)
 
-
+def deletaCasos(_):
+    for linha in tabela.selection():
+        for caso in casos:
+            if (caso[0] == int(linha[1:])):
+                casos.remove(caso)
+                break
+        tabela.delete(linha)
     
 def verificaPreenchimentoEntradas():
     w1_entrada_valor = w1_entrada.get()
@@ -67,7 +63,7 @@ def verificaPreenchimentoEntradas():
         messagebox.showerror(title = "W2 vazio", message = "Insira o valor de W2 !")
 
     # Verifica o preenchimento do bias X0 e W0
-    if (x0_entrada_valor == "" and w0_entrada_valor == ""):
+    elif (x0_entrada_valor == "" and w0_entrada_valor == ""):
        messagebox.showerror(title = "Bias vazio", message = "Primeiramente, preencha os valores do Bias! (X0 e W0)")
     elif (x0_entrada_valor == ""):
         messagebox.showerror(title = "XO vazio", message = "Insira o valor de X0 !")
@@ -75,20 +71,28 @@ def verificaPreenchimentoEntradas():
         messagebox.showerror(title = "W0 vazio", message = "Insira o valor de W0 !")
 
     # Verifica o preenchimento da taxa de aprendizagem e numero máximo de treinos
-    if (taxaAprendizagem_entrada_valor == ""):
+    elif (taxaAprendizagem_entrada_valor == ""):
         messagebox.showerror(title = "Taxa de aprendizagem vazio", message = "Insira o valor da taxa de aprendizagem !")
+    else:
     
-    # Verifica o preenchimento do numero máximo de treinos
-    if (numMaxTreinos_entrada_valor == ""):
-        numMaxTreinos_entrada_valor = 100000
+        # Verifica o preenchimento do numero máximo de treinos
+        if (numMaxTreinos_entrada_valor == ""):
+            numMaxTreinos_entrada_valor = 100000
 
-    # Envia os dados das entradas para a função de treino
-    #adaline.treinarAdaline()
+        # Envia os dados das entradas para a função de treino
+        x1 = []
+        x2 = []
+        target = []
+        for caso in casos:
+            x1.append(int(caso[1]))
+            x2.append(int(caso[2]))
+            target.append(int(caso[3]))
+        adaline.treinarAdaline(taxaAprendizagem_entrada_valor, [x0_entrada_valor, x1, x2], [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor], target)
 
-    # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.
-    #t = np.arange(0, 2*np.pi, .01)
-    #ax.plot(t, np.sin(t))
-    #canvas.draw()
+        # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.
+        #t = np.arange(0, 2*np.pi, .01)
+        #ax.plot(t, np.sin(t))
+        #canvas.draw()
 
 #-------------------------------------------------------------------------
 
@@ -151,7 +155,7 @@ for widget in bias_frame.winfo_children():
 
 # Criando Grid para o TREINO DOS NEURONIOS
 treinoNeuronio_frame = ttk.LabelFrame(frame, text = "Treino de Neurônios")
-treinoNeuronio_frame.grid(row = 0, column = 2, padx = (95, 20), pady = 20)
+treinoNeuronio_frame.grid(row = 0, column = 2, padx = (90, 20), pady = 20, sticky = "w")
 
 # Criando label para a taxa de aprendizagem
 taxaAprendizagem_label = ttk.Label(treinoNeuronio_frame, text= "Taxa de aprendizagem: ")
@@ -194,32 +198,44 @@ x2_entrada.grid(row = 0, column = 4)
 # Criando label para target
 target_label = ttk.Label(casos_frame, text = "Target:")
 target_label.grid(row = 1, column = 0)
-target_valor = StringVar(value = "+1")
+target_radio = StringVar(value = "+1")
 
 # Criando radio button para target +1
-targetMais_button = ttk.Radiobutton(casos_frame, text = "+1", value = "+1", variable = target_valor)
+targetMais_button = ttk.Radiobutton(casos_frame, text = "+1", value = "+1", variable = target_radio)
 targetMais_button.grid(row = 1, column = 1)
 
 # Criando radio button para target -1
-targetMenos_button = ttk.Radiobutton(casos_frame, text = "-1", value = "-1", variable = target_valor)
+targetMenos_button = ttk.Radiobutton(casos_frame, text = "-1", value = "-1", variable = target_radio)
 targetMenos_button.grid(row = 1, column = 2)
 
-saveButton = ttk.Button(casos_frame, text = "Salvar", command = criaTabela)
+saveButton = ttk.Button(casos_frame, text = "Salvar", command = adicionaCaso)
 saveButton.grid(row = 0, column = 5)
 
 # Criando um padding para todos os conteudos dentro do frame casos_frame
 for widget in casos_frame.winfo_children():
     widget.grid_configure(padx = 5, pady = 5)
 
+# Criando a tabela de casos
+tabela = ttk.Treeview(frame, columns = ("x1", "x2",  "target"), show = "headings", height = 19)
+tabela.column("x1", width = 150)
+tabela.column("x2", width = 150)
+tabela.column("target", width = 150)
+tabela.heading("x1", text = "X1")
+tabela.heading("x2", text = "X2")
+tabela.heading("target", text = "Target")
+tabela.grid(row = 3, column =  0, columnspan = 2, padx = 20, pady = 20)
+
 # Ajusta padding left da label de X2 e do botão salvar
 x2_label.grid(padx = (15, 5))
 saveButton.grid(padx = (15, 5))
+
+tabela.bind("<Delete>", deletaCasos)
 
 #-------------------------------------------------------------------------
 
 # Cria o grafico_frame como um LabelFrame
 grafico_frame = ttk.LabelFrame(frame, text="Gráfico")
-grafico_frame.grid(row=1, column=2, padx=20, pady=20)
+grafico_frame.grid(row=1, rowspan = 7, column=2, padx=20, pady=20)
 
 # Cria o botão "Treinar um Neurônio" como um LabelFrame
 trainNeuronButton = ttk.Button(grafico_frame, padding=(5, 5), text = "Treinar Neurônio", 

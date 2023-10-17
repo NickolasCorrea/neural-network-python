@@ -10,7 +10,7 @@ def funcao_ativacao(x1, x2):
         saida = 1.0   
     return saidaIntermediaria, saida
 
-def treinarAdaline(NRCASOS, taxaAprendizado, x, w, target):
+def treinarAdaline(taxaAprendizado, x, w, target):
     nrAcertos = 0  # acertos por treinamento
     nrMaxTreinos = 500
     nrTreinamentos = 0
@@ -54,7 +54,7 @@ x = [1, [25, 22, 30, 27, 4, 6, 10, 3], [34, 37, 33, 37, 40, 38, 44, 42]]
 w = [0, 0.02, 0.01]
 target = [-1, -1, -1, -1, 1, 1, 1, 1]  #target
 
-teste = treinarAdaline(NRCASOS, taxaAprendizado, x, w, target)
+# teste = treinarAdaline(taxaAprendizado, x, w, target)
 
 '''NRCASOS = 1  # documento do Nichollas
 taxaAprendizado = 0.01  # constante de aprendizado (0 < taxaAprendizado < 2)

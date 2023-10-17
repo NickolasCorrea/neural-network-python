@@ -1,0 +1,13 @@
+__pycache__/
+cycler/
+dateutil/
+kiwisolver/
+matplotlib/
+matplotlib.libs/
+mpl_toolkits/
+numpy/
+numpy.libs/
+packaging/
+PIL/
+pyparsing/
+six.py
