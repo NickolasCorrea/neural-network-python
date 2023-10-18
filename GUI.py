@@ -111,6 +111,10 @@ def verificaPreenchimentoEntradas():
     taxaAprendizagem_entrada_valor = taxaAprendizagem_entrada.get().replace(",", ".", 1)
     numMaxTreinos_entrada_valor = numMaxTreinos_entrada.get().replace(",", ".", 1)
 
+    # Verifica o preenchimento do numero máximo de treinos
+    if (numMaxTreinos_entrada_valor == ""):
+        numMaxTreinos_entrada_valor = 100000
+
     # Verifica o preenchimento dos pesos W1 e W2
     if (w1_entrada_valor == "" and w2_entrada_valor == ""):
         messagebox.showerror(title = "Pesos vazios", message = "Primeiramente, insira os valores dos pesos iniciais! (W1 e W2)")
@@ -136,10 +140,6 @@ def verificaPreenchimentoEntradas():
              not is_number(numMaxTreinos_entrada_valor)):
         messagebox.showerror(title = "Valores não numéricos", message = "Insira apenas valores numéricos !")
     else:
-    
-        # Verifica o preenchimento do numero máximo de treinos
-        if (numMaxTreinos_entrada_valor == ""):
-            numMaxTreinos_entrada_valor = 100000
 
         # Envia os dados das entradas para a função de treino
         x1 = []

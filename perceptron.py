@@ -38,7 +38,6 @@ def treinarPerceptron(taxaAprendizado, x, w, target, nrMaxTreinos):
             y = ativacao(x[1][i], x[2][i], w[1], w[2])
             if (y == target[i]):  # comparando y com o target
                 nrAcertos += 1
-                print(target[i])
 
             erro1 += (target[i] - y) * x[1][i]
             erro2 += (target[i] - y) * x[2][i]
