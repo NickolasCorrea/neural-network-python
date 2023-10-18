@@ -1,10 +1,11 @@
 import tkinter
-from tkinter import ttk, StringVar, END, messagebox, Text
+from tkinter import ttk, StringVar, END, messagebox, Text, DISABLED, filedialog as fd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (
      FigureCanvasTkAgg)
 import numpy as np
 import adaline
+import perceptron
  
 casos = []
 idCaso = 1
@@ -12,8 +13,8 @@ idCaso = 1
 def adicionaCaso():
     global idCaso
 
-    x1_entrada_valor = x1_entrada.get()
-    x2_entrada_valor = x2_entrada.get()
+    x1_entrada_valor = x1_entrada.get().replace(",", ".", 1)
+    x2_entrada_valor = x2_entrada.get().replace(",", ".", 1)
 
     if (x1_entrada_valor == "" and x2_entrada_valor == ""):
         messagebox.showerror(title = "Entradas vazias", message = "Primeiramente, insira os valores das entradas!")
@@ -21,10 +22,12 @@ def adicionaCaso():
         messagebox.showerror(title = "X1 vazio", message = "Insira o valor de X1 !")
     elif (x2_entrada_valor == ""):
         messagebox.showerror(title = "X2 vazio", message = "Insira o valor de X2 !")
-    elif (not x1_entrada_valor.isnumeric() or not x2_entrada_valor.isnumeric()):
-        messagebox.showerror(title = "X2 vazio", message = "Insira apenas valores numericos !")
+    elif (not is_number(x1_entrada_valor) or not is_number(x2_entrada_valor)):
+        messagebox.showerror(title = "Valores não numéricos", message = "Insira apenas valores numéricos !")
     else:
-        target_radio_valor = target_radio.get()
+        target_radio_valor = int(target_radio.get())
+        x1_entrada_valor = int(float(x1_entrada_valor))
+        x2_entrada_valor = int(float(x2_entrada_valor))
 
         # Adiciona novo caso à lista
         casos.append([idCaso, x1_entrada_valor, x2_entrada_valor, target_radio_valor])
@@ -43,22 +46,74 @@ def deletaCasos(_):
                 casos.remove(caso)
                 break
         tabela.delete(linha)
+
+def alteraEstadoBias():
+    if (modeloRede_radio.get() == "Adaline"):
+        x0_entrada.config(state = "normal")
+        w0_entrada.config(state = "normal")
+    else:
+        x0_entrada.config(state = DISABLED)
+        w0_entrada.config(state = DISABLED)
+
+def is_number(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+    
+def leArquivo():
+    global idCaso, casos
+
+    messagebox.showinfo(title = "Instruções de formatação", message = "Selecione um arquivo em que os valores de X1 estão na primeira linha, de X2 na segunda, e de target na terceira.\nOs valores devem ser separados por vírgula.")
+    caminho = fd.askopenfilename()
+    arquivo = open(caminho, "r")
+    casosArquivo = arquivo.read().split("\n")
+    arquivo.close()
+
+    x1 = casosArquivo[0].split(",")
+    x2 = casosArquivo[1].split(",")
+    target = casosArquivo[2].split(",")
+    try:
+        x1 = list(map(int, x1))
+        x2 = list(map(int, x2))
+        target = list(map(int, target))
+    except ValueError:
+        messagebox.showerror(title = "Formatação incorreta", message = "Siga as instruções de formatação !")
+        return
+    
+    if (len(x1) == len(x2) and len(x1) == len(target)):
+        casos = []
+        tabela.delete(*tabela.get_children())
+
+        for contador in range(len(x1)):
+            tabela.insert(parent = "", index = END, values = (x1[contador], x2[contador], target[contador]))
+            casos.append([idCaso, x1[contador], x2[contador], target[contador]])
+            idCaso += 1
+            
+    else:
+        messagebox.showerror(title = "Inconsistência no número de casos", message = "Número de valores entre X1, X2 e target é diferente !")
     
 def verificaPreenchimentoEntradas():
-    w1_entrada_valor = w1_entrada.get()
-    w2_entrada_valor = w2_entrada.get()
-
-    x0_entrada_valor = x0_entrada.get()
-    w0_entrada_valor = w0_entrada.get()
-
-    taxaAprendizagem_entrada_valor = taxaAprendizagem_entrada.get()
-    numMaxTreinos_entrada_valor = numMaxTreinos_entrada.get()
+    global casos
 
     modeloRede_radio_valor = modeloRede_radio.get()
 
+    w1_entrada_valor = w1_entrada.get().replace(",", ".", 1)
+    w2_entrada_valor = w2_entrada.get().replace(",", ".", 1)
+
+    x0_entrada_valor = "1"
+    w0_entrada_valor = "0"
+    if (modeloRede_radio_valor == "Adaline"):
+        x0_entrada_valor = x0_entrada.get().replace(",", ".", 1)
+        w0_entrada_valor = w0_entrada.get().replace(",", ".", 1)
+
+    taxaAprendizagem_entrada_valor = taxaAprendizagem_entrada.get().replace(",", ".", 1)
+    numMaxTreinos_entrada_valor = numMaxTreinos_entrada.get().replace(",", ".", 1)
+
     # Verifica o preenchimento dos pesos W1 e W2
     if (w1_entrada_valor == "" and w2_entrada_valor == ""):
-       messagebox.showerror(title = "Pesos vazios", message = "Primeiramente, insira os valores dos pesos iniciais! (W1 e W2)")
+        messagebox.showerror(title = "Pesos vazios", message = "Primeiramente, insira os valores dos pesos iniciais! (W1 e W2)")
     elif (w1_entrada_valor == ""):
         messagebox.showerror(title = "W1 vazio", message = "Insira o valor de W1 !")
     elif (w2_entrada_valor == ""):
@@ -75,6 +130,11 @@ def verificaPreenchimentoEntradas():
     # Verifica o preenchimento da taxa de aprendizagem e numero máximo de treinos
     elif (taxaAprendizagem_entrada_valor == ""):
         messagebox.showerror(title = "Taxa de aprendizagem vazio", message = "Insira o valor da taxa de aprendizagem !")
+    
+    elif (not is_number(x0_entrada_valor) or not is_number(w0_entrada_valor) or not is_number(w1_entrada_valor) or
+           not is_number(w2_entrada_valor) or not is_number(taxaAprendizagem_entrada_valor) or
+             not is_number(numMaxTreinos_entrada_valor)):
+        messagebox.showerror(title = "Valores não numéricos", message = "Insira apenas valores numéricos !")
     else:
     
         # Verifica o preenchimento do numero máximo de treinos
@@ -86,21 +146,21 @@ def verificaPreenchimentoEntradas():
         x2 = []
         target = []
         for caso in casos:
-            x1.append(int(caso[1]))
-            x2.append(int(caso[2]))
-            target.append(int(caso[3]))
+            x1.append(caso[1])
+            x2.append(caso[2])
+            target.append(caso[3])
 
-        x0_entrada_valor = int(x0_entrada_valor) # Converte a lista para float
+        x0_entrada_valor = int(float(x0_entrada_valor))
         xLista = [x0_entrada_valor, x1, x2]
 
         wLista = [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor]
-        wLista = list(map(float, wLista)) # Converte a lista para float
+        wLista = list(map(float, wLista))
 
-        taxaAprendizagem_entrada_valor = float(taxaAprendizagem_entrada_valor) # Converte a taxaAprendizado para float
+        taxaAprendizagem_entrada_valor = float(taxaAprendizagem_entrada_valor)
 
-        if(modeloRede_radio_valor == "Adaline"):
+        if (modeloRede_radio_valor == "Adaline"):
             resultado = adaline.treinarAdaline(taxaAprendizagem_entrada_valor, xLista, wLista,
-                                    target, numMaxTreinos_entrada_valor)
+                                    target, int(float(numMaxTreinos_entrada_valor)))
             
             # Deleta o texto na área de log (LIMPAR)
             logArea.delete("1.0", "end")
@@ -126,9 +186,9 @@ def verificaPreenchimentoEntradas():
             #t = np.arange(0, 2*np.pi, .01)
             #ax.plot(t, np.sin(t))
             canvas.draw()
-        #else:
-            #perceptron.treinarPerceptron(taxaAprendizagem_entrada_valor, [x0_entrada_valor, x1, x2], [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor], 
-            # target, numMaxTreinos_entrada_valor)
+        else:
+            perceptron.treinarPerceptron(taxaAprendizagem_entrada_valor, xLista, wLista, 
+            target, int(float(numMaxTreinos_entrada_valor)))
 
 
 #-------------------------------------------------------------------------
@@ -141,6 +201,8 @@ window.title("Rede Neural Adaline")
 # Criando frame que comportará os grids
 frame = ttk.Frame(window)
 frame.pack()
+
+style = ttk.Style()
 
 # Criando Grid dos PESOS
 pesos_frame = ttk.LabelFrame(frame, text = "Insira os pesos iniciais")
@@ -215,18 +277,19 @@ for widget in treinoNeuronio_frame.winfo_children():
 #-------------------------------------------------------------------------
 
 # Criando Grid para o MODELOS DE REDES NEURAIS
-modeloRede_frame = ttk.LabelFrame(frame, text = "Treino de Neurônios")
-modeloRede_frame.grid(row = 0, column = 3, padx = (90, 20), pady = 20, sticky = "w")
+modeloRede_frame = ttk.LabelFrame(frame, text = "Modo de treinamento")
+modeloRede_frame.grid(row = 0, column = 3, padx = (90, 75), pady = 20, sticky = "w")
 
 # Seta o modeloRede_radio para começar com ADALINE por padrão
 modeloRede_radio = StringVar(value = "Adaline")
 
+style.configure("bold.TRadiobutton", font=("Helvetica", "14", "bold"))
 # Criando radio button para target +1
-perceptron_radioButton = ttk.Radiobutton(modeloRede_frame, text = "Perceptron", value = "Perceptron", variable = modeloRede_radio)
+perceptron_radioButton = ttk.Radiobutton(modeloRede_frame, text = "Perceptron", value = "Perceptron", variable = modeloRede_radio, command = alteraEstadoBias, style = "bold.TRadiobutton")
 perceptron_radioButton.grid(row = 1, column = 1)
 
 # Criando radio button para target -1
-adaline_radioButton = ttk.Radiobutton(modeloRede_frame, text = "Adaline", value = "Adaline", variable = modeloRede_radio)
+adaline_radioButton = ttk.Radiobutton(modeloRede_frame, text = "Adaline", value = "Adaline", variable = modeloRede_radio, command = alteraEstadoBias, style = "bold.TRadiobutton")
 adaline_radioButton.grid(row = 1, column = 2)
 
 # Criando um padding para todos os conteudos dentro do frame casos_frame
@@ -273,7 +336,11 @@ saveButton.grid(row = 0, column = 5)
 for widget in casos_frame.winfo_children():
     widget.grid_configure(padx = 5, pady = 5)
 
-# Criando a tabela de casos
+# Criando botão para abrir arquivo
+abrirArquivo_button = ttk.Button(frame, text = "Abrir arquivo", command = leArquivo)
+abrirArquivo_button.grid(row = 2, column = 0, columnspan = 2)
+
+# Criando a TABELA DE CASOS
 tabela = ttk.Treeview(frame, columns = ("x1", "x2",  "target"), show = "headings", height = 19)
 tabela.column("x1", width = 150)
 tabela.column("x2", width = 150)

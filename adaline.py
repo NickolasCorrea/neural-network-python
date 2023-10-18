@@ -1,7 +1,7 @@
 # NICKOLAS DE SOUZA SILVEIRA CORRÊA - RA: 185823
 # VICTOR RICO MOURA SANTOS - RA: 191068
 
-import pdb
+# import pdb
 import sys
 from io import StringIO
 
@@ -28,7 +28,7 @@ def treinarAdaline(taxaAprendizado, x, w, target, nrMaxTreinos):
     #print("nrMaxTreinos: " + str(nrMaxTreinos))
     #pdb.set_trace()
 
-    while (nrAcertos != NRCASOS and nrTreinamentos != nrMaxTreinos):
+    while (nrAcertos < NRCASOS and nrTreinamentos <= nrMaxTreinos):
         nrTreinamentos += 1
         nrAcertos = 0
 
