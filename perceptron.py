@@ -1,7 +1,10 @@
 # NICKOLAS DE SOUZA SILVEIRA CORRÊA - RA: 185823
 # VICTOR RICO MOURA SANTOS - RA: 191068
 
-def funcao_ativacao(x1, x2, w1, w2):
+import sys
+from io import StringIO
+
+def ativacao(x1, x2, w1, w2):
     net = x1*w1 + x2*w2
     y = -1.0
     if (net >= 0.0):
@@ -9,17 +12,19 @@ def funcao_ativacao(x1, x2, w1, w2):
     return y
 
 def treinarPerceptron(taxaAprendizado, x, w, target, nrMaxTreinos):
+    buffer = StringIO()
+    sys.stdout = buffer
+
     nrTreinamentos = 0
-    nrAcertos = 0  # acertos por treinamento
+    nrAcertos = 0
     erro1 = 0.0
     erro2 = 0.0
     NRCASOS = len(target)
-
-    print("taxaAprendizado: " + str(taxaAprendizado))       #DEBUG
-    print("X: " + str(x))
-    print("W: " + str(w))
-    print("target: " + str(target))
-    print("nrMaxTreinos: " + str(nrMaxTreinos))
+    #print("taxaAprendizado: " + str(taxaAprendizado))       #DEBUG
+    #print("X: " + str(x))
+    #print("W: " + str(w))
+    #print("target: " + str(target))
+    #print("nrMaxTreinos: " + str(nrMaxTreinos))
 
     while (nrAcertos < NRCASOS and nrTreinamentos <= nrMaxTreinos):
 
@@ -30,7 +35,7 @@ def treinarPerceptron(taxaAprendizado, x, w, target, nrMaxTreinos):
 
         for i in range(NRCASOS):  # treinamento
 
-            y = funcao_ativacao(x[1][i], x[2][i], w[1], w[2])
+            y = ativacao(x[1][i], x[2][i], w[1], w[2])
             if (y == target[i]):  # comparando y com o target
                 nrAcertos += 1
                 print(target[i])
@@ -39,7 +44,7 @@ def treinarPerceptron(taxaAprendizado, x, w, target, nrMaxTreinos):
             erro2 += (target[i] - y) * x[2][i]
 
         print("Treino: " + str(nrTreinamentos) +
-            ", acertos: " + str(nrAcertos) + "\n")
+            ", acertos: " + str(nrAcertos) + "\n", file=buffer)
 
         if (nrAcertos == NRCASOS):  # convergiu
             break
@@ -48,10 +53,18 @@ def treinarPerceptron(taxaAprendizado, x, w, target, nrMaxTreinos):
             w[2] += taxaAprendizado * erro2
             
     if(nrAcertos == NRCASOS):
-        print("\nCONVERGIU!")
+        print("\nCONVERGIU!", file=buffer)
     else:
-        print("\nNÃO CONVERGIU!")
-    print("Pesos Finais: w1: " + str(w[1]) + ", w2: " + str(w[2]) + "\n")
+        print("\nNÃO CONVERGIU!", file=buffer)
+    print("Pesos Finais: w1: " + str(w[1]) + ", w2: " + str(w[2]) + "\n", file=buffer)
+
+    sys.stdout = sys.__stdout__
+
+    # Obter o conteúdo do buffer como uma string
+    resultado = buffer.getvalue()
+    buffer.close()  # Fechar o buffer
+
+    return resultado
 
 
 '''taxaAprendizado = 0.0009  # constante de aprendizado

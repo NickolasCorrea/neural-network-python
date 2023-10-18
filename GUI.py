@@ -182,14 +182,33 @@ def verificaPreenchimentoEntradas():
 
             # Plotar os pontos de x2 (verdes)
             plt.scatter(x1_verde, x2_verde, color='green', label='X2 (1)')
-
-            #t = np.arange(0, 2*np.pi, .01)
-            #ax.plot(t, np.sin(t))
             canvas.draw()
+
         else:
-            perceptron.treinarPerceptron(taxaAprendizagem_entrada_valor, xLista, wLista, 
+            resultado = perceptron.treinarPerceptron(taxaAprendizagem_entrada_valor, xLista, wLista, 
             target, int(float(numMaxTreinos_entrada_valor)))
 
+            # Deleta o texto na área de log (LIMPAR)
+            logArea.delete("1.0", "end")
+            # Insere o texto inicial na área de log
+            logArea.insert("1.0", resultado)
+            # Faz o Tkinter focar no fim do texto
+            logArea.see(tkinter.END)
+
+            plt.clf()
+            # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.
+            x1_azul = [x1[i] for i in range(len(x1)) if target[i] == -1]
+            x2_azul = [x2[i] for i in range(len(x2)) if target[i] == -1]
+
+            x1_verde = [x1[i] for i in range(len(x1)) if target[i] == 1]
+            x2_verde = [x2[i] for i in range(len(x2)) if target[i] == 1]
+
+            # Plotar os pontos de x1 (azuis)
+            plt.scatter(x1_azul, x2_azul, color='blue', label='X1 (-1)')
+
+            # Plotar os pontos de x2 (verdes)
+            plt.scatter(x1_verde, x2_verde, color='green', label='X2 (1)')
+            canvas.draw()
 
 #-------------------------------------------------------------------------
 
@@ -206,7 +225,7 @@ style = ttk.Style()
 
 # Criando Grid dos PESOS
 pesos_frame = ttk.LabelFrame(frame, text = "Insira os pesos iniciais")
-pesos_frame.grid(row = 0, column = 0, padx = 20, pady = 20, sticky = "w")
+pesos_frame.grid(row = 0, column = 0, padx = 10, pady = 10, sticky = "w")
 
 # Criando label para o W1
 w1_label = ttk.Label(pesos_frame, text= "W1:")
@@ -230,7 +249,7 @@ for widget in pesos_frame.winfo_children():
 
 # Criando Grid para o BIAS
 bias_frame = ttk.LabelFrame(frame, text = "Bias")
-bias_frame.grid(row = 0, column = 1, padx = 20, pady = 20, sticky = "e")
+bias_frame.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "e")
 
 # Criando label para o X0
 x0_label = ttk.Label(bias_frame, text= "X0:")
@@ -254,7 +273,7 @@ for widget in bias_frame.winfo_children():
 
 # Criando Grid para o TREINO DOS NEURONIOS
 treinoNeuronio_frame = ttk.LabelFrame(frame, text = "Treino de Neurônios")
-treinoNeuronio_frame.grid(row = 0, column = 2, padx = (90, 20), pady = 20, sticky = "w")
+treinoNeuronio_frame.grid(row = 0, column = 2, padx = (90, 10), pady = 10, sticky = "w")
 
 # Criando label para a taxa de aprendizagem
 taxaAprendizagem_label = ttk.Label(treinoNeuronio_frame, text= "Taxa de aprendizagem: ")
@@ -278,7 +297,7 @@ for widget in treinoNeuronio_frame.winfo_children():
 
 # Criando Grid para o MODELOS DE REDES NEURAIS
 modeloRede_frame = ttk.LabelFrame(frame, text = "Modo de treinamento")
-modeloRede_frame.grid(row = 0, column = 3, padx = (90, 75), pady = 20, sticky = "w")
+modeloRede_frame.grid(row = 0, column = 3, padx = (90, 75), pady = 10, sticky = "w")
 
 # Seta o modeloRede_radio para começar com ADALINE por padrão
 modeloRede_radio = StringVar(value = "Adaline")
@@ -300,7 +319,7 @@ for widget in modeloRede_frame.winfo_children():
 
 # Criando Grid para os CASOS
 casos_frame = ttk.LabelFrame(frame, text = "Casos")
-casos_frame.grid(row = 1, column =  0, columnspan = 2, padx = 20, pady = 20)
+casos_frame.grid(row = 1, column =  0, columnspan = 2, padx = 10, pady = 10)
 
 # Criando label para o X1
 x1_label = ttk.Label(casos_frame, text = "X1:", anchor = "e", width = 6)
@@ -348,7 +367,7 @@ tabela.column("target", width = 150)
 tabela.heading("x1", text = "X1")
 tabela.heading("x2", text = "X2")
 tabela.heading("target", text = "Target")
-tabela.grid(row = 3, column =  0, columnspan = 2, padx = 20, pady = 20)
+tabela.grid(row = 3, column =  0, columnspan = 2, padx = 10, pady = 10)
 
 # Ajusta padding left da label de X2 e do botão salvar
 x2_label.grid(padx = (15, 5))
@@ -360,7 +379,7 @@ tabela.bind("<Delete>", deletaCasos)
 
 # Cria o grafico_frame como um LabelFrame
 grafico_frame = ttk.LabelFrame(frame, text="Gráfico")
-grafico_frame.grid(row=1, rowspan = 3, columnspan = 2, column=2, padx=20, pady=20)
+grafico_frame.grid(row=1, rowspan = 3, columnspan = 2, column=2, padx=10, pady=10)
 
 # Cria o botão "Treinar um Neurônio" como um LabelFrame
 trainNeuronButton = ttk.Button(grafico_frame, padding=(10, 10), text = "Treinar Neurônio", 
@@ -388,16 +407,10 @@ grafico_frame.rowconfigure(0, weight=1)
 
 # Criando Grid para o LOG
 log_frame = ttk.LabelFrame(frame, text="Log")
-log_frame.grid(row = 5, column = 0, columnspan = 4, padx = 10, pady = 10)
+log_frame.grid(row = 5, column = 0, columnspan = 5, padx = 10, pady = 10, sticky = "w")
 
-logArea=Text(log_frame, height = 8, width = 142)
+logArea=Text(log_frame, height = 8, width = 148)
 logArea.grid(row = 2, column =  0)
-
-# Insere o texto inicial na área de log
-#logArea.insert("1.0", "Texto inicial na área de log.\nLinha 2.\nLinha 3.")
-
-# Deleta o texto na área de log
-logArea.delete("1.0", "end")
 
 # Loop para a GUI rodar até que seja fechada
 window.mainloop()

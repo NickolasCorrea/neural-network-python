@@ -1,12 +1,11 @@
 # NICKOLAS DE SOUZA SILVEIRA CORRÊA - RA: 185823
 # VICTOR RICO MOURA SANTOS - RA: 191068
 
-# import pdb
 import sys
 from io import StringIO
 
 
-def funcao_ativacao(x1, x2, x0, w1, w2, w0):
+def ativacao(x1, x2, x0, w1, w2, w0):
     saidaIntermediaria = (x0*w0) + (x1*w1) + (x2*w2)
     saida = -1.0
     if (saidaIntermediaria > 0.0):
@@ -26,7 +25,6 @@ def treinarAdaline(taxaAprendizado, x, w, target, nrMaxTreinos):
     #print("W: " + str(w))
     #print("target: " + str(target))
     #print("nrMaxTreinos: " + str(nrMaxTreinos))
-    #pdb.set_trace()
 
     while (nrAcertos < NRCASOS and nrTreinamentos <= nrMaxTreinos):
         nrTreinamentos += 1
@@ -35,7 +33,7 @@ def treinarAdaline(taxaAprendizado, x, w, target, nrMaxTreinos):
         contador = 0
         for contador in range(NRCASOS):
             
-            saidaIntermediaria, saida = funcao_ativacao(x[1][contador], x[2][contador], x[0], w[1], w[2], w[0])
+            saidaIntermediaria, saida = ativacao(x[1][contador], x[2][contador], x[0], w[1], w[2], w[0])
             if (saida == target[contador]):
                 nrAcertos += 1
 
