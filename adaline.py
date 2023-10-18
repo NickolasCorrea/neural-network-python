@@ -1,7 +1,9 @@
-#NICKOLAS DE SOUZA SILVEIRA CORRÊA - RA: 185823
-#VICTOR RICO MOURA SANTOS - RA: 191068
+# NICKOLAS DE SOUZA SILVEIRA CORRÊA - RA: 185823
+# VICTOR RICO MOURA SANTOS - RA: 191068
+
 import pdb
-from math import sqrt
+import sys
+from io import StringIO
 
 
 def funcao_ativacao(x1, x2, x0, w1, w2, w0):
@@ -12,11 +14,14 @@ def funcao_ativacao(x1, x2, x0, w1, w2, w0):
     return saidaIntermediaria, saida
 
 def treinarAdaline(taxaAprendizado, x, w, target, nrMaxTreinos):
-    nrAcertos = 0  # acertos por treinamento
+    buffer = StringIO()
+    sys.stdout = buffer
+
+    nrAcertos = 0
     nrTreinamentos = 0
     erro = 0
     NRCASOS = len(target)
-    #print("taxaAprendizado: " + taxaAprendizado)       #DEBUGZÃO 
+    #print("taxaAprendizado: " + taxaAprendizado)       #DEBUG
     #print("X: " + str(x))
     #print("W: " + str(w))
     #print("target: " + str(target))
@@ -34,7 +39,7 @@ def treinarAdaline(taxaAprendizado, x, w, target, nrMaxTreinos):
             if (saida == target[contador]):
                 nrAcertos += 1
 
-            print("Treino: " + str(nrTreinamentos) + ", acertos: " + str(nrAcertos))
+            print("Treino: " + str(nrTreinamentos) + ", acertos: " + str(nrAcertos), file=buffer)
             
             if (nrAcertos == NRCASOS):  # convergiu
                 break
@@ -47,11 +52,18 @@ def treinarAdaline(taxaAprendizado, x, w, target, nrMaxTreinos):
                 w[2] += taxaAprendizado * erro * x[2][contador] / xQuadrado
 
     if(nrAcertos == NRCASOS):
-        print("\nCONVERGIU!")
+        print("\nCONVERGIU!", file=buffer)
     else:
-        print("\nNÃO CONVERGIU!")
-    print("Pesos Finais: w1: " + str(w[1]) + ", w2: " + str(w[2]) + "\n")
+        print("\nNÃO CONVERGIU!", file=buffer)
+    print("Pesos Finais: w1: " + str(w[1]) + ", w2: " + str(w[2]) + "\n", file=buffer)
 
+    sys.stdout = sys.__stdout__
+
+    # Obter o conteúdo do buffer como uma string
+    resultado = buffer.getvalue()
+    buffer.close()  # Fechar o buffer
+
+    return resultado
 
 '''NRCASOS = 16  # mistureba do Nichollas
 taxaAprendizado = 0.01  # constante de aprendizado (0 < taxaAprendizado < 2)

@@ -1,5 +1,5 @@
 import tkinter
-from tkinter import ttk, StringVar, END, messagebox
+from tkinter import ttk, StringVar, END, messagebox, Text
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (
      FigureCanvasTkAgg)
@@ -90,16 +90,24 @@ def verificaPreenchimentoEntradas():
             x2.append(int(caso[2]))
             target.append(int(caso[3]))
 
-        xLista = [x0_entrada_valor, x1, x2]
-        wLista = [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor]
-
         x0_entrada_valor = int(x0_entrada_valor) # Converte a lista para float
+        xLista = [x0_entrada_valor, x1, x2]
+
+        wLista = [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor]
         wLista = list(map(float, wLista)) # Converte a lista para float
+
         taxaAprendizagem_entrada_valor = float(taxaAprendizagem_entrada_valor) # Converte a taxaAprendizado para float
 
         if(modeloRede_radio_valor == "Adaline"):
-            adaline.treinarAdaline(taxaAprendizagem_entrada_valor, xLista, wLista,
+            resultado = adaline.treinarAdaline(taxaAprendizagem_entrada_valor, xLista, wLista,
                                     target, numMaxTreinos_entrada_valor)
+            
+            # Deleta o texto na área de log (LIMPAR)
+            logArea.delete("1.0", "end")
+            # Insere o texto inicial na área de log
+            logArea.insert("1.0", resultado)
+            # Faz o Tkinter focar no fim do texto
+            logArea.see(tkinter.END)
 
             # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.
             #t = np.arange(0, 2*np.pi, .01)
@@ -208,6 +216,10 @@ perceptron_radioButton.grid(row = 1, column = 1)
 adaline_radioButton = ttk.Radiobutton(modeloRede_frame, text = "Adaline", value = "Adaline", variable = modeloRede_radio)
 adaline_radioButton.grid(row = 1, column = 2)
 
+# Criando um padding para todos os conteudos dentro do frame casos_frame
+for widget in modeloRede_frame.winfo_children():
+    widget.grid_configure(padx = 5, pady = 5)
+
 #-------------------------------------------------------------------------
 
 # Criando Grid para os CASOS
@@ -268,12 +280,12 @@ tabela.bind("<Delete>", deletaCasos)
 
 # Cria o grafico_frame como um LabelFrame
 grafico_frame = ttk.LabelFrame(frame, text="Gráfico")
-grafico_frame.grid(row=1, rowspan = 7, columnspan = 2, column=2, padx=20, pady=20)
+grafico_frame.grid(row=1, rowspan = 3, columnspan = 2, column=2, padx=20, pady=20)
 
 # Cria o botão "Treinar um Neurônio" como um LabelFrame
-trainNeuronButton = ttk.Button(grafico_frame, padding=(5, 5), text = "Treinar Neurônio", 
+trainNeuronButton = ttk.Button(grafico_frame, padding=(10, 10), text = "Treinar Neurônio", 
                                command = verificaPreenchimentoEntradas)
-trainNeuronButton.grid(row = 0, column = 0, padx=(0, 500))
+trainNeuronButton.grid(row = 0, column = 0)
 
 # Cria a figura e os seus eixos
 fig, ax = plt.subplots()
@@ -293,6 +305,20 @@ frame.rowconfigure(0, weight=1)
 grafico_frame.columnconfigure(0, weight=1)
 grafico_frame.rowconfigure(0, weight=1)
 
+#-------------------------------------------------------------------------
+
+# Criando Grid para o LOG
+log_frame = ttk.LabelFrame(frame, text="Log")
+log_frame.grid(row = 5, column = 0, columnspan = 4, padx = 10, pady = 10)
+
+logArea=Text(log_frame, height = 8, width = 142)
+logArea.grid(row = 2, column =  0)
+
+# Insere o texto inicial na área de log
+#logArea.insert("1.0", "Texto inicial na área de log.\nLinha 2.\nLinha 3.")
+
+# Deleta o texto na área de log
+logArea.delete("1.0", "end")
 
 # Loop para a GUI rodar até que seja fechada
 window.mainloop()
