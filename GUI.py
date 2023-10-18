@@ -109,10 +109,23 @@ def verificaPreenchimentoEntradas():
             # Faz o Tkinter focar no fim do texto
             logArea.see(tkinter.END)
 
+            plt.clf()
             # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.
+            x1_azul = [x1[i] for i in range(len(x1)) if target[i] == -1]
+            x2_azul = [x2[i] for i in range(len(x2)) if target[i] == -1]
+
+            x1_verde = [x1[i] for i in range(len(x1)) if target[i] == 1]
+            x2_verde = [x2[i] for i in range(len(x2)) if target[i] == 1]
+
+            # Plotar os pontos de x1 (azuis)
+            plt.scatter(x1_azul, x2_azul, color='blue', label='X1 (-1)')
+
+            # Plotar os pontos de x2 (verdes)
+            plt.scatter(x1_verde, x2_verde, color='green', label='X2 (1)')
+
             #t = np.arange(0, 2*np.pi, .01)
             #ax.plot(t, np.sin(t))
-            #canvas.draw()
+            canvas.draw()
         #else:
             #perceptron.treinarPerceptron(taxaAprendizagem_entrada_valor, [x0_entrada_valor, x1, x2], [w0_entrada_valor, w1_entrada_valor, w2_entrada_valor], 
             # target, numMaxTreinos_entrada_valor)
@@ -292,12 +305,11 @@ fig, ax = plt.subplots()
 
 # Adiciona a figura ao grafico_frame
 canvas = FigureCanvasTkAgg(fig, master=grafico_frame)
+plt.title('Gráfico de Dispersão', fontweight='bold')
+plt.xlabel('X1', fontweight='bold')
+plt.ylabel('X2', fontweight='bold')
 canvas.get_tk_widget().grid(row = 1, column = 0)
 canvas.draw()
-
-# Plot data on Matplotlib Figure
-# t = np.arange(0, 2*np.pi, .01)
-# ax.plot(t, np.sin(t))
 
 # Configura a expansão dos widgets
 frame.columnconfigure(0, weight=1)
