@@ -1,14 +1,17 @@
-import tkinter
+import tkinter as tk
 from tkinter import ttk, StringVar, END, messagebox, Text, DISABLED, filedialog as fd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (
      FigureCanvasTkAgg)
-import numpy as np
+from tkscrolledframe import ScrolledFrame
+
 import adaline
 import perceptron
  
+
 casos = []
 idCaso = 1
+
 
 def adicionaCaso():
     global idCaso
@@ -167,7 +170,7 @@ def verificaPreenchimentoEntradas():
             # Insere o texto inicial na área de log
             logArea.insert("1.0", resultado)
             # Faz o Tkinter focar no fim do texto
-            logArea.see(tkinter.END)
+            logArea.see(END)
 
             plt.clf()
             # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.
@@ -182,7 +185,7 @@ def verificaPreenchimentoEntradas():
 
             # Plotar os pontos de x2 (verdes)
             plt.scatter(x1_verde, x2_verde, color='green', label='X2 (1)')
-            canvas.draw()
+            canvas_grafico.draw()
 
         else:
             resultado = perceptron.treinarPerceptron(taxaAprendizagem_entrada_valor, xLista, wLista, 
@@ -193,7 +196,7 @@ def verificaPreenchimentoEntradas():
             # Insere o texto inicial na área de log
             logArea.insert("1.0", resultado)
             # Faz o Tkinter focar no fim do texto
-            logArea.see(tkinter.END)
+            logArea.see(END)
 
             plt.clf()
             # Depois de realizar o cálculo, deve-se desenhar no gráfico, e recarregar o desenho.
@@ -208,18 +211,23 @@ def verificaPreenchimentoEntradas():
 
             # Plotar os pontos de x2 (verdes)
             plt.scatter(x1_verde, x2_verde, color='green', label='X2 (1)')
-            canvas.draw()
+            canvas_grafico.draw()
 
 #-------------------------------------------------------------------------
 
 # Criando janela da aplicação
-window = tkinter.Tk()
+window = tk.Tk()
+window.geometry("1200x600")
 window.title("Rede Neural Adaline")
 # window.state('zoomed') --> Começa a aplicação em tela cheia.
 
 # Criando frame que comportará os grids
-frame = ttk.Frame(window)
-frame.pack()
+frame_scroll = ScrolledFrame(window)
+frame_scroll.pack(side="top", expand=1, fill="both")
+frame_scroll.bind_arrow_keys(window)
+frame_scroll.bind_scroll_wheel(window)
+
+frame = frame_scroll.display_widget(ttk.Frame)
 
 style = ttk.Style()
 
@@ -390,12 +398,12 @@ trainNeuronButton.grid(row = 0, column = 0)
 fig, ax = plt.subplots()
 
 # Adiciona a figura ao grafico_frame
-canvas = FigureCanvasTkAgg(fig, master=grafico_frame)
+canvas_grafico = FigureCanvasTkAgg(fig, master=grafico_frame)
 plt.title('Gráfico de Dispersão', fontweight='bold')
 plt.xlabel('X1', fontweight='bold')
 plt.ylabel('X2', fontweight='bold')
-canvas.get_tk_widget().grid(row = 1, column = 0)
-canvas.draw()
+canvas_grafico.get_tk_widget().grid(row = 1, column = 0)
+canvas_grafico.draw()
 
 # Configura a expansão dos widgets
 frame.columnconfigure(0, weight=1)
