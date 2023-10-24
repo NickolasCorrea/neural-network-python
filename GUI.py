@@ -13,7 +13,7 @@ casos = []
 idCaso = 1
 
 
-def adicionaCaso():
+def adicionaCaso(editar):
     global idCaso
 
     x1_entrada_valor = x1_entrada.get().replace(",", ".", 1)
@@ -32,20 +32,50 @@ def adicionaCaso():
         x1_entrada_valor = int(float(x1_entrada_valor))
         x2_entrada_valor = int(float(x2_entrada_valor))
 
-        # Adiciona novo caso à lista
-        casos.append([idCaso, x1_entrada_valor, x2_entrada_valor, target_radio_valor])
-        idCaso += 1
+        if (not editar):
+            # Adiciona novo caso à lista
+            casos.append([idCaso, x1_entrada_valor, x2_entrada_valor, target_radio_valor])
+            idCaso += 1
 
-        # Insere novo caso na tabela
-        tabela.insert(parent = "", index = END, values = (x1_entrada_valor, x2_entrada_valor, target_radio_valor))
+            # Insere novo caso na tabela
+            tabela.insert(parent = "", index = END, values = (x1_entrada_valor, x2_entrada_valor, target_radio_valor))
+        else:
+            if (len(tabela.selection()) == 0):
+                messagebox.showerror(title = "Item não selecionado", message = "Seleciona uma das linhas !")
+                return
+            linha = tabela.selection()[0]
+            for caso in casos:
+                if (caso[0] == int(linha[1:], base=16)):
+                    caso[1] = x1_entrada_valor
+                    caso[2] = x2_entrada_valor
+                    caso[3] = target_radio_valor
+                    break
+            tabela.item(linha, values=(x1_entrada_valor, x2_entrada_valor, target_radio_valor))
 
         x1_entrada.delete(0, END)
         x2_entrada.delete(0, END)
 
+def preencheCampos(_):
+    global target_radio
+
+    try:
+        valoresLinha = tabela.item(tabela.selection()[0], "values")
+        x1_entrada.delete(0, END)
+        x2_entrada.delete(0, END)
+        x1_entrada.insert(0, valoresLinha[0])
+        x2_entrada.insert(0, valoresLinha[1])
+        if (valoresLinha[2] == "1"):
+            targetMais_button.invoke()
+        else:
+            targetMenos_button.invoke()
+    except IndexError:
+        return
+
+
 def deletaCasos(_):
     for linha in tabela.selection():
         for caso in casos:
-            if (caso[0] == int(linha[1:])):
+            if (caso[0] == int(linha[1:], base=16)):
                 casos.remove(caso)
                 break
         tabela.delete(linha)
@@ -185,7 +215,7 @@ def verificaPreenchimentoEntradas():
 
             # Plotar os pontos de x2 (verdes)
             plt.scatter(x1_verde, x2_verde, color='green', label='X2 (1)')
-            canvas_grafico.draw()
+            canvas.draw()
 
         else:
             resultado = perceptron.treinarPerceptron(taxaAprendizagem_entrada_valor, xLista, wLista, 
@@ -211,19 +241,19 @@ def verificaPreenchimentoEntradas():
 
             # Plotar os pontos de x2 (verdes)
             plt.scatter(x1_verde, x2_verde, color='green', label='X2 (1)')
-            canvas_grafico.draw()
+            canvas.draw()
 
 #-------------------------------------------------------------------------
 
 # Criando janela da aplicação
 window = tk.Tk()
-window.geometry("1200x600")
+window.geometry("1187x600")
 window.title("Rede Neural Adaline")
 # window.state('zoomed') --> Começa a aplicação em tela cheia.
 
 # Criando frame que comportará os grids
 frame_scroll = ScrolledFrame(window)
-frame_scroll.pack(side="top", expand=1, fill="both")
+frame_scroll.pack(side="top", expand=True, fill="both")
 frame_scroll.bind_arrow_keys(window)
 frame_scroll.bind_scroll_wheel(window)
 
@@ -233,7 +263,7 @@ style = ttk.Style()
 
 # Criando Grid dos PESOS
 pesos_frame = ttk.LabelFrame(frame, text = "Insira os pesos iniciais")
-pesos_frame.grid(row = 0, column = 0, padx = 10, pady = 10, sticky = "w")
+pesos_frame.grid(row = 0, column = 0, padx = (17, 0), pady = 10, sticky = "w")
 
 # Criando label para o W1
 w1_label = ttk.Label(pesos_frame, text= "W1:")
@@ -257,7 +287,7 @@ for widget in pesos_frame.winfo_children():
 
 # Criando Grid para o BIAS
 bias_frame = ttk.LabelFrame(frame, text = "Bias")
-bias_frame.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "e")
+bias_frame.grid(row = 0, column = 1, padx = (0, 51), pady = 10, sticky = "e")
 
 # Criando label para o X0
 x0_label = ttk.Label(bias_frame, text= "X0:")
@@ -281,7 +311,7 @@ for widget in bias_frame.winfo_children():
 
 # Criando Grid para o TREINO DOS NEURONIOS
 treinoNeuronio_frame = ttk.LabelFrame(frame, text = "Treino de Neurônios")
-treinoNeuronio_frame.grid(row = 0, column = 2, padx = (90, 10), pady = 10, sticky = "w")
+treinoNeuronio_frame.grid(row = 0, column = 2, padx = (38, 0), pady = 10, sticky = "w")
 
 # Criando label para a taxa de aprendizagem
 taxaAprendizagem_label = ttk.Label(treinoNeuronio_frame, text= "Taxa de aprendizagem: ")
@@ -305,17 +335,17 @@ for widget in treinoNeuronio_frame.winfo_children():
 
 # Criando Grid para o MODELOS DE REDES NEURAIS
 modeloRede_frame = ttk.LabelFrame(frame, text = "Modo de treinamento")
-modeloRede_frame.grid(row = 0, column = 3, padx = (90, 75), pady = 10, sticky = "w")
+modeloRede_frame.grid(row = 0, column = 3, padx = (60, 0), pady = 10)
 
 # Seta o modeloRede_radio para começar com ADALINE por padrão
 modeloRede_radio = StringVar(value = "Adaline")
 
 style.configure("bold.TRadiobutton", font=("Helvetica", "14", "bold"))
-# Criando radio button para target +1
+# Criando radio button para Perceptron
 perceptron_radioButton = ttk.Radiobutton(modeloRede_frame, text = "Perceptron", value = "Perceptron", variable = modeloRede_radio, command = alteraEstadoBias, style = "bold.TRadiobutton")
 perceptron_radioButton.grid(row = 1, column = 1)
 
-# Criando radio button para target -1
+# Criando radio button para Adaline
 adaline_radioButton = ttk.Radiobutton(modeloRede_frame, text = "Adaline", value = "Adaline", variable = modeloRede_radio, command = alteraEstadoBias, style = "bold.TRadiobutton")
 adaline_radioButton.grid(row = 1, column = 2)
 
@@ -327,7 +357,7 @@ for widget in modeloRede_frame.winfo_children():
 
 # Criando Grid para os CASOS
 casos_frame = ttk.LabelFrame(frame, text = "Casos")
-casos_frame.grid(row = 1, column =  0, columnspan = 2, padx = 10, pady = 10)
+casos_frame.grid(row = 1, column =  0, columnspan = 2, padx = (14, 22), pady = 10)
 
 # Criando label para o X1
 x1_label = ttk.Label(casos_frame, text = "X1:", anchor = "e", width = 6)
@@ -356,8 +386,11 @@ targetMais_button.grid(row = 1, column = 1)
 targetMenos_button = ttk.Radiobutton(casos_frame, text = "-1", value = "-1", variable = target_radio)
 targetMenos_button.grid(row = 1, column = 2)
 
-saveButton = ttk.Button(casos_frame, text = "Salvar", command = adicionaCaso)
+saveButton = ttk.Button(casos_frame, text = "Salvar", command = lambda: adicionaCaso(False))
 saveButton.grid(row = 0, column = 5)
+
+editButton = ttk.Button(casos_frame, text = "Editar", command = lambda: adicionaCaso(True))
+editButton.grid(row = 1, column = 5)
 
 # Criando um padding para todos os conteudos dentro do frame casos_frame
 for widget in casos_frame.winfo_children():
@@ -368,19 +401,21 @@ abrirArquivo_button = ttk.Button(frame, text = "Abrir arquivo", command = leArqu
 abrirArquivo_button.grid(row = 2, column = 0, columnspan = 2)
 
 # Criando a TABELA DE CASOS
-tabela = ttk.Treeview(frame, columns = ("x1", "x2",  "target"), show = "headings", height = 19)
-tabela.column("x1", width = 150)
-tabela.column("x2", width = 150)
-tabela.column("target", width = 150)
+tabela = ttk.Treeview(frame, columns = ("x1", "x2",  "target"), show = "headings", height = 18)
+tabela.column("x1", width = 154)
+tabela.column("x2", width = 154)
+tabela.column("target", width = 152)
 tabela.heading("x1", text = "X1")
 tabela.heading("x2", text = "X2")
 tabela.heading("target", text = "Target")
-tabela.grid(row = 3, column =  0, columnspan = 2, padx = 10, pady = 10)
+tabela.grid(row = 3, column =  0, columnspan = 2, padx = (17, 0), pady = 10, sticky = "w")
 
 # Ajusta padding left da label de X2 e do botão salvar
 x2_label.grid(padx = (15, 5))
 saveButton.grid(padx = (15, 5))
+editButton.grid(padx = (15, 5))
 
+tabela.bind("<<TreeviewSelect>>", preencheCampos)
 tabela.bind("<Delete>", deletaCasos)
 
 #-------------------------------------------------------------------------
@@ -390,7 +425,7 @@ grafico_frame = ttk.LabelFrame(frame, text="Gráfico")
 grafico_frame.grid(row=1, rowspan = 3, columnspan = 2, column=2, padx=10, pady=10)
 
 # Cria o botão "Treinar um Neurônio" como um LabelFrame
-trainNeuronButton = ttk.Button(grafico_frame, padding=(10, 10), text = "Treinar Neurônio", 
+trainNeuronButton = ttk.Button(grafico_frame, padding=(10, 0), text = "Treinar Neurônio", 
                                command = verificaPreenchimentoEntradas)
 trainNeuronButton.grid(row = 0, column = 0)
 
@@ -398,12 +433,12 @@ trainNeuronButton.grid(row = 0, column = 0)
 fig, ax = plt.subplots()
 
 # Adiciona a figura ao grafico_frame
-canvas_grafico = FigureCanvasTkAgg(fig, master=grafico_frame)
+canvas = FigureCanvasTkAgg(fig, master=grafico_frame)
 plt.title('Gráfico de Dispersão', fontweight='bold')
 plt.xlabel('X1', fontweight='bold')
 plt.ylabel('X2', fontweight='bold')
-canvas_grafico.get_tk_widget().grid(row = 1, column = 0)
-canvas_grafico.draw()
+canvas.get_tk_widget().grid(row = 1, column = 0)
+canvas.draw()
 
 # Configura a expansão dos widgets
 frame.columnconfigure(0, weight=1)
@@ -415,9 +450,9 @@ grafico_frame.rowconfigure(0, weight=1)
 
 # Criando Grid para o LOG
 log_frame = ttk.LabelFrame(frame, text="Log")
-log_frame.grid(row = 5, column = 0, columnspan = 5, padx = 10, pady = 10, sticky = "w")
+log_frame.grid(row = 5, column = 0, columnspan = 5, padx = 16, pady = 10, sticky = "w")
 
-logArea=Text(log_frame, height = 8, width = 148)
+logArea=Text(log_frame, height = 8, width = 141)
 logArea.grid(row = 2, column =  0)
 
 # Loop para a GUI rodar até que seja fechada
